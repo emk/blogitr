@@ -2,11 +2,15 @@ require 'spec_helper'
 require 'blogitr/document'
 
 describe Blogitr::Document do
+  def should_parse_as headers, body, extended
+    @doc.headers.should == headers
+    @doc.body.should == body
+    @doc.extended.should == extended
+  end
+
   it "should parse documents with no YAML header" do
     @doc = Blogitr::Document.new "foo\nbar\nbaz"
-    @doc.headers.should == {}
-    @doc.body.should == "foo\nbar\nbaz"
-    @doc.extended.should == nil
+    should_parse_as({}, "foo\nbar\nbaz", nil)
   end
 
   it "should parse documents with a YAML header" do
@@ -18,16 +22,13 @@ foo
 
 bar
 EOD
-    @doc.headers.should == { 'title' => "My Doc", 'subtitle' => 'An Essay' }
-    @doc.body.should == "foo\n\nbar\n"
-    @doc.extended.should == nil
+    should_parse_as({ 'title' => "My Doc", 'subtitle' => 'An Essay' },
+                    "foo\n\nbar\n", nil)
   end
 
   it "should parse documents with no body" do
     @doc = Blogitr::Document.new("title: My Doc")
-    @doc.headers.should == { 'title' => "My Doc" }
-    @doc.body.should == ''
-    @doc.extended.should == nil
+    should_parse_as({ 'title' => "My Doc" }, '', nil)
   end
 
   it "should separate extended content from the main body" do
@@ -36,7 +37,6 @@ foo
 <!--more--> 
 bar
 EOD
-    @doc.body.should == "foo\n"
-    @doc.extended.should == "bar\n"
+    should_parse_as({}, "foo\n", "bar\n")
   end
 end
