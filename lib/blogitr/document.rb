@@ -1,12 +1,18 @@
+require 'rubygems'
 require 'yaml'
+require 'redcloth'
 
 module Blogitr
+  FILTERS={
+    :textile => RedCloth
+  }
+
   class Document
     attr_reader :body
     attr_reader :headers
     attr_reader :extended
 
-    def initialize string
+    def initialize string, filter=nil
       if string =~ /\A.*:/
         if string =~ /\A((.|\n)*?)\n\n((.|\n)*)\z/
           # Headers and body.
@@ -30,6 +36,12 @@ module Blogitr
       else
         @body = content
         @extended = nil
+      end
+
+      # Apply any markup filters to our content.
+      if filter
+        @body = FILTERS[filter].new(@body).to_html
+        @extended = FILTERS[filter].new(@extended).to_html if @extended
       end
     end
   end

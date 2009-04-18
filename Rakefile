@@ -10,6 +10,8 @@ begin
     gem.homepage = "http://github.com/emk/blogitr"
     gem.authors = ["Eric Kidd"]
 
+    gem.add_runtime_dependency 'RedCloth', [">= 4.0"]
+
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
 rescue LoadError

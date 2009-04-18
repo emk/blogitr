@@ -39,4 +39,9 @@ bar
 EOD
     should_parse_as({}, "foo\n", "bar\n")
   end
+
+  it "should parse textile content" do
+    @doc = Blogitr::Document.new("foo _bar_ \"baz\"", :textile)
+    should_parse_as({}, "<p>foo <em>bar</em> &#8220;baz&#8221;</p>", nil)
+  end
 end
