@@ -9,6 +9,9 @@ module Blogitr
     :markdown => proc {|text| RDiscount.new(text, :smart) }
   }
 
+  class UnknownFilter < RuntimeError
+  end
+
   class Document
     attr_reader :body
     attr_reader :headers
@@ -42,7 +45,8 @@ module Blogitr
 
       # Apply any markup filters to our content.
       if filter
-        filter_proc = FILTERS[filter]
+        filter_proc = FILTERS[filter] or
+          raise UnknownFilter, "Unknown filter: #{filter}"
         @body = filter_proc.call(@body).to_html
         @extended = filter_proc.call(@extended).to_html if @extended
       end
