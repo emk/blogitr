@@ -1,10 +1,12 @@
 require 'rubygems'
 require 'yaml'
 require 'redcloth'
+require 'rdiscount'
 
 module Blogitr
   FILTERS={
-    :textile => RedCloth
+    :textile => proc {|text| RedCloth.new(text) },
+    :markdown => proc {|text| RDiscount.new(text, :smart) }
   }
 
   class Document
@@ -40,8 +42,9 @@ module Blogitr
 
       # Apply any markup filters to our content.
       if filter
-        @body = FILTERS[filter].new(@body).to_html
-        @extended = FILTERS[filter].new(@extended).to_html if @extended
+        filter_proc = FILTERS[filter]
+        @body = filter_proc.call(@body).to_html
+        @extended = filter_proc.call(@extended).to_html if @extended
       end
     end
   end

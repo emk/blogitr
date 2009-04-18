@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'blogitr/document'
 
 describe Blogitr::Document do
-  def should_parse_as headers, body, extended
+  def should_parse_as headers, body, extended=nil
     @doc.headers.should == headers
     @doc.body.should == body
     @doc.extended.should == extended
@@ -10,7 +10,7 @@ describe Blogitr::Document do
 
   it "should parse documents with no YAML header" do
     @doc = Blogitr::Document.new "foo\nbar\nbaz"
-    should_parse_as({}, "foo\nbar\nbaz", nil)
+    should_parse_as({}, "foo\nbar\nbaz")
   end
 
   it "should parse documents with a YAML header" do
@@ -23,12 +23,12 @@ foo
 bar
 EOD
     should_parse_as({ 'title' => "My Doc", 'subtitle' => 'An Essay' },
-                    "foo\n\nbar\n", nil)
+                    "foo\n\nbar\n")
   end
 
   it "should parse documents with no body" do
     @doc = Blogitr::Document.new("title: My Doc")
-    should_parse_as({ 'title' => "My Doc" }, '', nil)
+    should_parse_as({ 'title' => "My Doc" }, '')
   end
 
   it "should separate extended content from the main body" do
@@ -41,7 +41,12 @@ EOD
   end
 
   it "should parse textile content" do
-    @doc = Blogitr::Document.new("foo _bar_ \"baz\"", :textile)
-    should_parse_as({}, "<p>foo <em>bar</em> &#8220;baz&#8221;</p>", nil)
+    @doc = Blogitr::Document.new("foo *bar* \"baz\"", :textile)
+    should_parse_as({}, "<p>foo <strong>bar</strong> &#8220;baz&#8221;</p>")
+  end
+
+  it "should parse Markdown content" do
+    @doc = Blogitr::Document.new("foo *bar* \"baz\"", :markdown)
+    should_parse_as({}, "<p>foo <em>bar</em> &ldquo;baz&rdquo;</p>\n")
   end
 end
