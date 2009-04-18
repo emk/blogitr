@@ -54,6 +54,6 @@ EOD
   it "should raise an error if an unknown fitler is specified" do
     lambda do
       @doc = Blogitr::Document.new("foo *bar* \"baz\"", :unknown)
-    end.should raise_error(Blogitr::UnknownFilter)
+    end.should raise_error(Blogitr::UnknownFilterError)
   end
 end

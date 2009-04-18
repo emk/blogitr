@@ -1,7 +1,19 @@
-= blogitr
+= Blogitr
 
-Description goes here.
+Blogitr is an experimental blog storage engine based on git.  So far, this
+is just a rough sketch of an idea--nothing here is actually usable yet.
+
+What Blogitr isn't intended to be:
+
+1. A static site generator.
+2. A dynamic site application.
+
+Instead, it corresponds to the model classes in a typical Rails blog
+application.  But instead of storing articles in a database, it will
+eventually store them in a git repository.
+
+This code is inspired by Jekyll and Typo.
 
 == Copyright
 
-Copyright (c) 2009 Eric Kidd. See LICENSE for details.
+Copyright 2009 Eric Kidd. See LICENSE for details.
