@@ -41,8 +41,9 @@ EOD
   end
 
   it "should parse textile content" do
-    @doc = Blogitr::Document.new("foo *bar* \"baz\"", :textile)
-    should_parse_as({}, "<p>foo <strong>bar</strong> &#8220;baz&#8221;</p>")
+    @doc = Blogitr::Document.new("foo *bar*\n<!--more-->\n\"baz\"", :textile)
+    should_parse_as({}, "<p>foo <strong>bar</strong></p>",
+                    "<p>&#8220;baz&#8221;</p>")
   end
 
   it "should parse Markdown content" do
