@@ -7,11 +7,6 @@ describe Blogitr::Document do
     @doc.extended.should == extended
   end
 
-  it "should parse documents with no YAML header" do
-    @doc = Blogitr::Document.new "foo\nbar\nbaz"
-    should_parse_as({}, "foo\nbar\nbaz")
-  end
-
   it "should parse documents with a YAML header" do
     @doc = Blogitr::Document.new <<EOD
 title: My Doc
@@ -25,7 +20,12 @@ EOD
                     "foo\n\nbar\n")
   end
 
-  it "should parse documents with no body" do
+  it "should parse documents without a YAML header" do
+    @doc = Blogitr::Document.new "foo\nbar\nbaz"
+    should_parse_as({}, "foo\nbar\nbaz")
+  end
+
+  it "should parse documents with a YAML header but no body" do
     @doc = Blogitr::Document.new("title: My Doc")
     should_parse_as({ 'title' => "My Doc" }, '')
   end
@@ -39,15 +39,11 @@ EOD
     should_parse_as({}, "foo\n", "bar\n")
   end
 
-  it "should parse textile content" do
-    @doc = Blogitr::Document.new("foo *bar*\n<!--more-->\n\"baz\"", :textile)
-    should_parse_as({}, "<p>foo <strong>bar</strong></p>",
-                    "<p>&#8220;baz&#8221;</p>")
-  end
-
-  it "should parse Markdown content" do
-    @doc = Blogitr::Document.new("foo *bar* \"baz\"", :markdown)
-    should_parse_as({}, "<p>foo <em>bar</em> &ldquo;baz&rdquo;</p>\n")
+  it "should expand macros" do
+    input = "title: Foo\n\n<macro:example foo=\"bar\">baz</macro:example>"
+    @doc = Blogitr::Document.new(input)
+    should_parse_as({'title' => "Foo"},
+                    "Options: {\"foo\"=>\"bar\"}\nBody: baz")
   end
 
   it "should raise an error if an unknown fitler is specified" do
@@ -56,22 +52,31 @@ EOD
     end.should raise_error(Blogitr::UnknownFilterError)
   end
 
-  it "should expand macros" do
-    input = "title: Foo\n\n<macro:example foo=\"bar\">baz</macro:example>"
-    @doc = Blogitr::Document.new(input)
-    should_parse_as({'title' => "Foo"},
-                    "Options: {\"foo\"=>\"bar\"}\nBody: baz")
+  describe "with a :textile filter" do
+    it "should filter content" do
+      @doc = Blogitr::Document.new("foo *bar*\n<!--more-->\n\"baz\"", :textile)
+      should_parse_as({}, "<p>foo <strong>bar</strong></p>",
+                      "<p>&#8220;baz&#8221;</p>")
+    end
+
+    it "should protect expanded macros from filtering" do
+      text = "\n<macro:example>*foo*</macro:example>"
+      @doc = Blogitr::Document.new(text, :textile)
+      should_parse_as({},  "Options: {}\nBody: *foo*")
+    end
   end
 
-  it "should protect expanded macros from textile" do
-    text = "\n<macro:example>*foo*</macro:example>"
-    @doc = Blogitr::Document.new(text, :textile)
-    should_parse_as({},  "Options: {}\nBody: *foo*")
-  end
+  describe "with a :markdown filter" do
+    it "should filter content" do
+      @doc = Blogitr::Document.new("foo *bar* \"baz\"", :markdown)
+      should_parse_as({}, "<p>foo <em>bar</em> &ldquo;baz&rdquo;</p>\n")
+    end
 
-  it "should protect expanded macros from Markdown" do
-    text = "\n<macro:example>*foo*</macro:example>"
-    @doc = Blogitr::Document.new(text, :markdown)
-    should_parse_as({}, "<div class=\"raw\">Options: {}\nBody: *foo*</div>\n\n")
+    it "should protect expanded macros from filtering" do
+      text = "\n<macro:example>*foo*</macro:example>"
+      @doc = Blogitr::Document.new(text, :markdown)
+      should_parse_as({},
+                      "<div class=\"raw\">Options: {}\nBody: *foo*</div>\n\n")
+    end
   end
 end

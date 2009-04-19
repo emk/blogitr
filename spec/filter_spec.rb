@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Blogitr::Filter do
-  it "should require process and protect_html to be overridden" do
+  it "should require #process and #protect_html to be overridden" do
     filter = Blogitr::Filter.new
     lambda do
       filter.process("")
