@@ -2,16 +2,8 @@ require 'yaml'
 
 module Blogitr
   # A document consists of headers, a body, and (optionally) extended
-  # content.  For example:
-  #
-  #   title: My document
-  #
-  #   This is the body.
-  #   <!--more-->
-  #   This is the extended content.
-  #
-  # A document may consist of raw HTML, or it may be processed using a
-  # filter such as textile or Markdown.
+  # content.  A document may consist of raw HTML, or it may be processed
+  # using a filter such as textile or Markdown.
   class Document
     # The document headers.  This is the result of calling YAML::load on
     # the header block at the top of the document.
