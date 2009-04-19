@@ -1,6 +1,13 @@
 require 'spec_helper'
 require 'blogitr/document'
 
+class ExampleMacro < Blogitr::Macro
+  def expand options, body
+    "Options: #{options.inspect}\nBody: #{body}"
+  end
+end
+Blogitr.register_macro(:example, ExampleMacro)
+
 describe Blogitr::Document do
   def should_parse_as headers, body, extended=nil
     @doc.headers.should == headers
@@ -56,4 +63,16 @@ EOD
       @doc = Blogitr::Document.new("foo *bar* \"baz\"", :unknown)
     end.should raise_error(Blogitr::UnknownFilterError)
   end
+
+  it "should expand macros" do
+    input = "title: Foo\n\n<macro:example foo=\"bar\">baz</macro:example>"
+    @doc = Blogitr::Document.new(input)
+    should_parse_as({'title' => "Foo"},
+                    "Options: {\"foo\"=>\"bar\"}\nBody: baz")
+  end
+
+  # robust attribute parsing
+  # raise error for unknown macro
+  # wrap HTML output in <notextile>, etc.
+  # filter classes
 end

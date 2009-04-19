@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'yaml'
+require 'rexml/document'
 require 'redcloth'
 require 'rdiscount'
 
@@ -45,11 +46,18 @@ module Blogitr
     # optional +filter+ from Blogitr::FILTERS to the body and extended
     # content.
     def initialize string, filter=nil
+      # Look up our text filter.
+      if filter
+        @filter = FILTERS[filter] or
+          raise UnknownFilterError, "Unknown filter: #{filter}"
+      end
+
+      # Extract our headers, if any.
       if string =~ /\A.*:/
-        if string =~ /\A((.|\n)*?)\n\n((.|\n)*)\z/
+        if string =~ /\A((?:.|\n)*?)\n\n((?:.|\n)*)\z/
           # Headers and body.
           @headers = YAML::load($1)
-          content = $3
+          content = $2
         else
           # Headers without body.
           @headers = YAML::load(string)
@@ -62,21 +70,41 @@ module Blogitr
       end
 
       # Split the body at a <!--more--> marker, if we have one.
-      if content =~ /\A((.|\n)*?)<!--more-->\s*\n((.|\n)*)\z/
+      if content =~ /\A((?:.|\n)*?)<!--more-->\s*\n((?:.|\n)*)\z/
         @body = $1
-        @extended = $3
+        @extended = $2
       else
         @body = content
         @extended = nil
       end
 
-      # Apply any markup filters to our content.
-      if filter
-        filter_proc = FILTERS[filter] or
-          raise UnknownFilterError, "Unknown filter: #{filter}"
-        @body = filter_proc.call(@body)
-        @extended = filter_proc.call(@extended) if @extended
+      # Apply macros and filters to our content.
+      @body = process_text(body)
+      @extended = process_text(extended) if @extended
+    end
+
+    protected
+
+    def process_text text
+      text = @filter.call(text) if @filter
+      apply_macros(text)
+    end
+
+    def apply_macros text
+      text.gsub(/<macro:([-_A-Za-z0-9]+)([^>]*)>((?:.|\n)*?)<\/macro:\1>/) do
+        macro_name = $1.to_sym
+        attributes = parse_attributes($2)
+        body = $3
+        MACROS[macro_name].expand(attributes, body)
       end
+    end
+
+    # Parse a string containing XML-format attributes.
+    def parse_attributes attributes
+      result = {}
+      xml_doc = REXML::Document.new("<tag #{attributes} />")
+      xml_doc.root.attributes.each {|a, b| result[a] = b }
+      result
     end
   end
 end
