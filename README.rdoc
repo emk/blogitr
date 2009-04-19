@@ -10,6 +10,12 @@ What Blogitr isn't intended to be:
 1. A static site generator.
 2. A dynamic site application.
 
+Blogitr is inspired by Jekyll and Typo.  It should be relatively easy to
+export blog posts from Typo or Mephisto for use with Blogitr, because the
+underlying conceptual models are very similar.
+
+== Article format
+
 An example Blogitr article:
 
   title: Metaprogramming tips
@@ -31,7 +37,22 @@ An example Blogitr article:
 Note that the +code+ macro is not currently supplied by Blogitr.  It could,
 however, be implemented by subclassing Blogitr::Macro.
 
-Currently implemented features include:
+== Repository layout
+
+Here's an example repository:
+
+  blog.yml
+  2009/04/18/1312-metaprogramming-tips.markdown
+  2009/04/19/0947-my-most-recent-post.textile
+
+The top-level <code>blog.yml</code> file contains information about the
+blog.  Individual blog posts are stored in files with names of the form:
+
+  YYYY/MM/DD/HHMM-PERMALINK.FORMAT
+
+Note that the date is stored in the blog's timezone, not in GMT.
+
+== What's been implemented
 
 1. Document metadata (stored as YAML headers).
 2. Extended content (using the WordPress \<!--more--> convention).
@@ -39,8 +60,6 @@ Currently implemented features include:
    Markdown and raw HTML.
 4. Pluggable macros for generating custom HTML.  These work like
    \<typo:code>.
-
-This code is inspired by Jekyll and Typo.
 
 == Copyright
 
