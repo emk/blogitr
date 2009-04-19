@@ -1,11 +1,38 @@
+require 'rexml/document'
+
 module Blogitr
   MACROS = {}
 
-  def self.register_macro name, macro_class
-    MACROS[name] = macro_class.new
+  # Register +macro+ under the symbol +name+.
+  def self.register_macro name, macro
+    MACROS[name] = macro
   end
 
+  # Expand all macros in +text+.
+  def self.expand_macros text
+    text.gsub(/<macro:([-_A-Za-z0-9]+)([^>]*)>((?:.|\n)*?)<\/macro:\1>/) do
+      macro_name = $1.to_sym
+      attributes = {}
+      xml_doc = REXML::Document.new("<tag #{$2} />")
+      xml_doc.root.attributes.each {|a, b| attributes[a] = b }
+      body = $3
+      MACROS[macro_name].expand(attributes, body)
+    end
+  end
+
+  # A macro expands a piece of specialized inline markup in a document.
+  # For example:
+  #
+  #   <macro:code lang="ruby">
+  #   REGISTRATIONS = {}
+  #   </macro:code>
+  #
+  # A macro looks like an XML tag, but it actually contains plain text.
+  # Macros may not be nested.
   class Macro
+    # Given +options+ (parsed from the macro's XML-style "attributes") and
+    # +body+ (the raw text found inside the macro), return a fragment of
+    # valid XHTML.
     def expand options, body
       raise "You must override Macro#filter"
     end

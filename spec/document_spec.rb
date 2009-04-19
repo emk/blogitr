@@ -6,7 +6,7 @@ class ExampleMacro < Blogitr::Macro
     "Options: #{options.inspect}\nBody: #{body}"
   end
 end
-Blogitr.register_macro(:example, ExampleMacro)
+Blogitr.register_macro(:example, ExampleMacro.new)
 
 describe Blogitr::Document do
   def should_parse_as headers, body, extended=nil
@@ -74,5 +74,4 @@ EOD
   # robust attribute parsing
   # raise error for unknown macro
   # wrap HTML output in <notextile>, etc.
-  # filter classes
 end
