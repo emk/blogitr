@@ -20,7 +20,18 @@ describe Blogitr::Macro do
       %Q(Options: {"a"=>"b"}\nBody: )
   end
 
-  # robust attribute parsing
+  it "should expand macros with attributes containing '>' characters" do
+    expand("<macro:example a='>'></macro:example>").should ==
+      %Q(Options: {"a"=>">"}\nBody: )
+    expand("<macro:example a=\">\"></macro:example>").should ==
+      %Q(Options: {"a"=>">"}\nBody: )
+  end
+
+  it "should expand macros with attributes containing entities" do
+    expand("<macro:example a='&lt;'></macro:example>").should ==
+      %Q(Options: {"a"=>"<"}\nBody: )
+  end
+
   # raise error for unknown macro
   # wrap HTML output in <notextile>, etc.
 end

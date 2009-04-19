@@ -10,7 +10,10 @@ module Blogitr
 
   # Expand all macros in +text+.
   def self.expand_macros text
-    text.gsub(/<macro:([-_A-Za-z0-9]+)([^>]*)>((?:.|\n)*?)<\/macro:\1>/) do
+    pattern = /<macro:([-_A-Za-z0-9]+) ((?:[^>'"]|"[^"]*"|'[^']*')*) >
+               ((?:.|\n)*?)
+               <\/macro:\1>/x
+    text.gsub(pattern) do
       macro_name = $1.to_sym
       attributes = {}
       xml_doc = REXML::Document.new("<tag #{$2} />")
