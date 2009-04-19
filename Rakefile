@@ -13,6 +13,8 @@ begin
     gem.add_runtime_dependency 'RedCloth', [">= 4.1.9"]
     gem.add_runtime_dependency 'rdiscount', [">= 1.3.4"]
 
+    gem.add_development_dependency 'rspec', [">= 1.1.11.3"]
+
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
 rescue LoadError
