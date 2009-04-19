@@ -20,7 +20,7 @@ module Blogitr
       macro = MACROS[$1.to_sym]
       if macro
         attributes = {}
-        xml_doc = REXML::Document.new("<tag #{$2} />")
+        xml_doc = REXML::Document.new("<#{$1} #{$2} />")
         xml_doc.root.attributes.each {|a, b| attributes[a] = b }
         body = $3
         html = macro.expand(attributes, body)
