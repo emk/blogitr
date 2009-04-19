@@ -63,9 +63,13 @@ module Blogitr
       RDiscount.new(text, :smart).to_html
     end
     def protect_html html
-      # Wrapping raw HTML in another tag prevents Markdown from messing
-      # with it.  We can probably do better, but this is good for now.
-      "<div class=\"raw\">#{html}</div>"
+      # We need to make sure +html+ is wrapped in a tag.  This will cause
+      # the Markdown parser to leave it alone.
+      if html =~ /^(.|\n)*<[_A-Za-z]/
+        html
+      else
+        "<div class=\"raw\">#{html}</div>"
+      end
     end
   end
   register_filter(:markdown, MarkdownFilter.new)

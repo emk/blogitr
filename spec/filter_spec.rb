@@ -12,3 +12,19 @@ describe Blogitr::Filter do
   end
 end
 
+describe Blogitr::MarkdownFilter do
+  describe "#protect_html" do
+    before do
+      @filter = Blogitr.find_filter(:markdown)
+    end
+
+    it "should wrap bare text in a <div> tag" do
+      @filter.protect_html("foo").should == %Q(<div class="raw">foo</div>)
+    end
+
+    it "should do nothing if HTML is already wrapped in a tag" do
+      @filter.protect_html("<p>foo</p>").should == "<p>foo</p>"
+    end
+  end
+end
+
