@@ -13,6 +13,10 @@ module Blogitr
     attr_reader :date_time
 
     # Create a new article.
+    #
+    # <code>:text</code>:: A document to parse.
+    # <code>:path</code>:: The relative path to this document in the
+    #                      repository.
     def initialize opts
       pattern =
         /\A(\d{4})\/(\d{2})\/(\d{2})\/(\d{2})(\d{2})-([^.]+)\.([a-z0-9]+)\z/

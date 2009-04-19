@@ -26,9 +26,18 @@ module Blogitr
 
     # Construct a new Document.
     #
-    # +:text+:: A document to parse for +:headers+, +:raw_body+ and
-    #           +:raw_extended+.
-    # <<<<<<<<< FIXME
+    # <code>:text</code>::
+    #   A document to parse for <code>:headers</code>,
+    #   <code>:raw_body</code> and <code>:raw_extended</code>.
+    # <code>:headers</code>::
+    #   A hash-table, keyed with strings, containing the document's YAML
+    #   header.
+    # <code>:raw_body</code>::
+    #   The unparsed body of the document.
+    # <code>:raw_extended</code>::
+    #   The unparsed extended content of the document, or +nil+.
+    # <code>:filter</code>::
+    #   A symbol specifying what content filter to use for this document.
     def initialize opts
       if opts[:text]
         parse(opts[:text])
@@ -40,10 +49,12 @@ module Blogitr
       @filter = Blogitr.find_filter(opts[:filter])
     end
 
+    # The body of the document, in HTML format.
     def body
       @body ||= process_text(@raw_body)
     end
 
+    # The extended content of the document, in HTML format, or +nil+.
     def extended
       @extended ||= process_text(@raw_extended) if @raw_extended
     end
@@ -58,7 +69,7 @@ module Blogitr
       "#{headers}\n#{@raw_body}#{extended}"
     end
 
-    protected
+    private
 
     # Parse +text+ into headers, body and extended content.
     def parse text
@@ -89,6 +100,7 @@ module Blogitr
       end      
     end
 
+    # Apply macros and filters to +text+.
     def process_text text
       @filter.process(Blogitr.expand_macros(@filter, text))
     end
