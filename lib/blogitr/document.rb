@@ -24,50 +24,20 @@ module Blogitr
     # line containing \<!--more-->, if any.  May be +nil+.
     attr_reader :raw_extended
 
-    # Parse +string+ into headers, body and extended content, and return a
-    # Document.
-    def self.parse string, filter
-      # Extract our headers, if any.
-      if string =~ /\A.*:/
-        if string =~ /\A((?:.|\n)*?)\n\n((?:.|\n)*)\z/
-          # Headers and body.
-          headers = YAML::load($1)
-          content = $2
-        else
-          # Headers without body.
-          headers = YAML::load(string)
-          content = ''
-        end
+    # Construct a new Document.
+    #
+    # +:text+:: A document to parse for +:headers+, +:raw_body+ and
+    #           +:raw_extended+.
+    # <<<<<<<<< FIXME
+    def initialize opts
+      if opts[:text]
+        parse(opts[:text])
       else
-        # Body without headers.
-        headers = {}
-        content = string
+        @headers = opts[:headers]
+        @raw_body = opts[:raw_body]
+        @raw_extended = opts[:raw_extended]
       end
-
-      # Split the body at a <!--more--> marker, if we have one.
-      if content =~ /\A((?:.|\n)*?)\n<!--more-->\s*\n((?:.|\n)*)\z/
-        body = $1
-        extended = $2
-      else
-        body = content
-        extended = nil
-      end      
-
-      # Create our Document.
-      new headers, body, extended, filter
-    end
-
-    # Construct a new Document, using +headers+, +raw_body+ and
-    # +raw_extended+, and use +filter+ to process +raw_body+ and
-    # +raw_extended+.  +headers+ should be a hash table, and +filter+
-    # should be a symbol corresponding to a registered Filter.
-    def initialize headers, raw_body, raw_extended, filter
-      @headers = headers
-      @raw_body = raw_body
-      @raw_extended = raw_extended
-
-      # Look up our text filter.
-      @filter = Blogitr.find_filter(filter)
+      @filter = Blogitr.find_filter(opts[:filter])
     end
 
     def body
@@ -89,6 +59,35 @@ module Blogitr
     end
 
     protected
+
+    # Parse +text+ into headers, body and extended content.
+    def parse text
+      # Extract our headers, if any.
+      if text =~ /\A.*:/
+        if text =~ /\A((?:.|\n)*?)\n\n((?:.|\n)*)\z/
+          # Headers and body.
+          @headers = YAML::load($1)
+          content = $2
+        else
+          # Headers without body.
+          @headers = YAML::load(text)
+          content = ''
+        end
+      else
+        # Body without headers.
+        @headers = {}
+        content = text
+      end
+
+      # Split the body at a <!--more--> marker, if we have one.
+      if content =~ /\A((?:.|\n)*?)\n<!--more-->\s*\n((?:.|\n)*)\z/
+        @raw_body = $1
+        @raw_extended = $2
+      else
+        @raw_body = content
+        @raw_extended = nil
+      end      
+    end
 
     def process_text text
       @filter.process(Blogitr.expand_macros(@filter, text))

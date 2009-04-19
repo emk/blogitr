@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Blogitr::Document do
   def parse text, filter=:html
-    @doc = Blogitr::Document.parse text, filter
+    @doc = Blogitr::Document.new :text => text, :filter => filter
   end
 
   def should_parse_as headers, body, extended=nil
@@ -92,8 +92,9 @@ EOD
 
   describe "#to_s" do
     def should_serialize_as headers, body, extended, serialized
-      Blogitr::Document.new(headers, body, extended, :html).to_s.should ==
-        serialized
+      opts = { :headers => headers, :raw_body => body,
+               :raw_extended => extended, :filter => :html }
+      Blogitr::Document.new(opts).to_s.should == serialized
     end
 
     it "should serialize documents with headers" do
