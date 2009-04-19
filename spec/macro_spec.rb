@@ -32,6 +32,10 @@ describe Blogitr::Macro do
       %Q(Options: {"a"=>"<"}\nBody: )
   end
 
-  # raise error for unknown macro
+  it "should convert unknown macros to raw HTML" do
+    text = "<macro:unknown a='b'>c</macro:unknown>"
+    expand(text).should == CGI.escapeHTML(text)
+  end
+
   # wrap HTML output in <notextile>, etc.
 end

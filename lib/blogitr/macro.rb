@@ -1,4 +1,5 @@
 require 'rexml/document'
+require 'cgi'
 
 module Blogitr
   MACROS = {}
@@ -13,13 +14,17 @@ module Blogitr
     pattern = /<macro:([-_A-Za-z0-9]+) ((?:[^>'"]|"[^"]*"|'[^']*')*) >
                ((?:.|\n)*?)
                <\/macro:\1>/x
-    text.gsub(pattern) do
-      macro_name = $1.to_sym
-      attributes = {}
-      xml_doc = REXML::Document.new("<tag #{$2} />")
-      xml_doc.root.attributes.each {|a, b| attributes[a] = b }
-      body = $3
-      MACROS[macro_name].expand(attributes, body)
+    text.gsub(pattern) do |match|
+      macro = MACROS[$1.to_sym]
+      if macro
+        attributes = {}
+        xml_doc = REXML::Document.new("<tag #{$2} />")
+        xml_doc.root.attributes.each {|a, b| attributes[a] = b }
+        body = $3
+        macro.expand(attributes, body)
+      else
+        CGI.escapeHTML(match)
+      end
     end
   end
 
