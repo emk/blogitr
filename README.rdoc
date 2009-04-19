@@ -14,6 +14,11 @@ Blogitr is inspired by Jekyll and Typo.  It should be relatively easy to
 export blog posts from Typo or Mephisto for use with Blogitr, because the
 underlying conceptual models are very similar.
 
+== API stability
+
+The APIs provided by this library will change without warning until version
+0.2 is released.
+
 == Article format
 
 An example Blogitr article:
@@ -60,6 +65,8 @@ Note that the date is stored in the blog's timezone, not in GMT.
    Markdown and raw HTML.
 4. Pluggable macros for generating custom HTML.  These work like
    \<typo:code>.
+5. Loading a blog's metadata.
+6. Loading a blog's articles.
 
 == Copyright
 
