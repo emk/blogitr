@@ -50,6 +50,12 @@ EOD
                     "Options: {\"foo\"=>\"bar\"}\nBody: baz")
   end
 
+  it "should provide access to raw body and extended content" do
+    parse "*foo*\n<!--more-->\n_bar_", :textile
+    @doc.raw_body.should == "*foo*\n"
+    @doc.raw_extended.should == "_bar_"
+  end
+
   it "should raise an error if an unknown fitler is specified" do
     lambda do
       parse "foo *bar* \"baz\"", :unknown

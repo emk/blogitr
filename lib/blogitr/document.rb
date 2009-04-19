@@ -17,12 +17,12 @@ module Blogitr
     # the header block at the top of the document.
     attr_reader :headers
 
-    # The body of the document.
-    attr_reader :body
+    # The unprocessed body of the document.
+    attr_reader :raw_body
 
-    # The portion of the document appearing after the first line containing
-    # \<!--more-->, if any.  May be +nil+.
-    attr_reader :extended
+    # The unprocessed portion of the document appearing after the first
+    # line containing \<!--more-->, if any.  May be +nil+.
+    attr_reader :raw_extended
 
     # Parse +string+ into headers, body and extended content, and return a
     # Document.
@@ -57,21 +57,25 @@ module Blogitr
       new headers, body, extended, filter
     end
 
-    # Construct a new Document, using +headers+, +body+ and +extended+, and
-    # use +filter+ to process +body+ and +extended+.  +headers+ should be a
-    # hash table, and +filter+ should be a symbol corresponding to a
-    # registered Filter.
-    def initialize headers, body, extended, filter
+    # Construct a new Document, using +headers+, +raw_body+ and
+    # +raw_extended+, and use +filter+ to process +raw_body+ and
+    # +raw_extended+.  +headers+ should be a hash table, and +filter+
+    # should be a symbol corresponding to a registered Filter.
+    def initialize headers, raw_body, raw_extended, filter
       @headers = headers
-      @body = body
-      @extended = extended
+      @raw_body = raw_body
+      @raw_extended = raw_extended
 
       # Look up our text filter.
       @filter = Blogitr.find_filter(filter)
+    end
 
-      # Apply macros and filters to our content.
-      @body = process_text(body)
-      @extended = process_text(extended) if @extended
+    def body
+      @body ||= process_text(@raw_body)
+    end
+
+    def extended
+      @extended ||= process_text(@raw_extended) if @raw_extended
     end
 
     protected
