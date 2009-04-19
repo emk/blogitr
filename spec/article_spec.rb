@@ -13,4 +13,8 @@ describe Blogitr::Article do
   it "should have a permalink" do
     @article.permalink.should == 'my-newest-post'
   end
+
+  it "should have a date and time" do
+    @article.date_time.should == DateTime.new(2009, 4, 19, 9, 47)
+  end
 end
