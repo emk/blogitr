@@ -31,6 +31,11 @@ Spec::Rake::SpecTask.new(:rcov) do |spec|
   spec.rcov = true
 end
 
+Spec::Rake::SpecTask.new('SPECS') do |spec|
+  spec.libs << 'lib' << 'spec'
+  spec.spec_files = FileList['spec/**/*_spec.rb']
+  spec.spec_opts = %w(--format progress --format specdoc:SPECS)
+end
 
 task :default => :spec
 
@@ -46,7 +51,7 @@ Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_dir = 'rdoc'
   rdoc.title = "blogitr #{version}"
   rdoc.rdoc_files.include('README*')
+  rdoc.rdoc_files.include('SPECS')
   rdoc.rdoc_files.include('LICENSE')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
-
