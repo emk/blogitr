@@ -8,6 +8,11 @@ Spec::Runner.configure do |config|
   
 end
 
+# Load our example blog.
+def example_blog
+  Blogitr::Blog.new(File.join(File.dirname(__FILE__), 'blog'))
+end
+
 # We use this macro in several spec files.
 class ExampleMacro < Blogitr::Macro
   def expand options, body

@@ -5,11 +5,11 @@ module Blogitr
   # single blog.  Unless indicated otherwise, articles are always returned
   # in reverse-chronological order.
   class Blog
-    YEAR_GLOB    = "[0-9][0-9][0-9][0-9]"  # :nodoc:
-    MONTH_GLOB   = "[0-9][0-9]"            # :nodoc:
-    DAY_GLOB     = "[0-9][0-9]"            # :nodoc:
-    TIME_GLOB    = "[0-9][0-9][0-9][0-9]"  # :nodoc:
-    ARTICLE_GLOB = "#{TIME_GLOB}-*.*[a-z]" # :nodoc: (reject "*.textile~")
+    YEAR_GLOB    = "[0-9][0-9][0-9][0-9]"     # :nodoc:
+    MONTH_GLOB   = "[0-9][0-9]"               # :nodoc:
+    DAY_GLOB     = "[0-9][0-9]"               # :nodoc:
+    TIME_GLOB    = "[0-9][0-9][0-9][0-9]"     # :nodoc:
+    ARTICLE_GLOB = "#{TIME_GLOB}-*.*[a-z0-9]" # :nodoc: (reject "*.textile~")
 
     # Create a new blog object using the data stored at +root+.
     def initialize root
@@ -25,7 +25,10 @@ module Blogitr
     # All the articles posted to the blog.
     def articles
       glob = File.join(@root, YEAR_GLOB, MONTH_GLOB, DAY_GLOB, ARTICLE_GLOB)
-      Dir[glob].sort.reverse.map {|path| Blogitr::Article.new(path) }
+      Dir[glob].sort.reverse.map do |path|
+        relative_path = path[(@root+"/").length..-1]
+        Blogitr::Article.new(:path => relative_path, :text => File.read(path))
+      end
     end
   end
 end
