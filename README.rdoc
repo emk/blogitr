@@ -2,16 +2,36 @@
 
 Blogitr is an experimental blog storage engine based on git.  So far, this
 is just a rough sketch of an idea--nothing here is actually usable yet.
-
-Eventually, the goal is for Blogitr to supply git-based model classes for
-other blogging software.
+Blogitr is intended to replace the <code>app/models</code> subdirectory of
+a typical blogging application.
 
 What Blogitr isn't intended to be:
 
 1. A static site generator.
 2. A dynamic site application.
 
-What Blogitr currently supports:
+An example Blogitr article:
+
+  title: Metaprogramming tips
+
+  Ruby supports class-based metaprogramming, which offers many of the
+  advantages of LISP macros.
+
+  <!--more-->
+
+  The Sinatra web framework, for example, uses top-level functions
+  such as @get@ to declare how to respond to HTTP requests:
+
+  <macro:code lang="ruby">
+  get "/" do
+    "Welcome to my website!"
+  end
+  </macro>
+
+Note that the +code+ macro is not currently supplied by Blogitr.  It could,
+however, be implemented by subclassing Blogitr::Macro.
+
+Currently implemented features include:
 
 1. Document metadata (stored as YAML headers).
 2. Extended content (using the WordPress \<!--more--> convention).
