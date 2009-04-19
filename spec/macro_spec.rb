@@ -5,6 +5,13 @@ describe Blogitr::Macro do
     Blogitr.expand_macros(Blogitr.find_filter(filter), text)
   end
 
+  it "should require expand to be overridden" do
+    macro = Blogitr::Macro.new
+    lambda do
+      macro.expand(Blogitr.find_filter(:textile), "")
+    end.should raise_error(RuntimeError)
+  end
+
   it "should expand macros with no arguments" do
     expand("<macro:example>foo</macro:example>").should ==
       %Q(Options: {}\nBody: foo)
