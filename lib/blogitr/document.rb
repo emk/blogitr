@@ -65,7 +65,7 @@ module Blogitr
     protected
 
     def process_text text
-      @filter.process(Blogitr.expand_macros(text))
+      @filter.process(Blogitr.expand_macros(@filter, text))
     end
   end
 end

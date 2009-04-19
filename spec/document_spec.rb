@@ -62,4 +62,16 @@ EOD
     should_parse_as({'title' => "Foo"},
                     "Options: {\"foo\"=>\"bar\"}\nBody: baz")
   end
+
+  it "should protect expanded macros from textile" do
+    text = "\n<macro:example>*foo*</macro:example>"
+    @doc = Blogitr::Document.new(text, :textile)
+    should_parse_as({},  "Options: {}\nBody: *foo*")
+  end
+
+  it "should protect expanded macros from Markdown" do
+    text = "\n<macro:example>*foo*</macro:example>"
+    @doc = Blogitr::Document.new(text, :markdown)
+    should_parse_as({}, "<div class=\"raw\">Options: {}\nBody: *foo*</div>\n\n")
+  end
 end

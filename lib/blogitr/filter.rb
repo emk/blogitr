@@ -16,6 +16,11 @@ module Blogitr
     def process text
       raise "Must override Filter#process"
     end
+
+    # Protect +html+ against further processing by this filter.
+    def protect_html html
+      raise "Must override Filter#protect_html"
+    end
   end
 
   # Register +filter+ under the symbol +name+.
@@ -35,6 +40,9 @@ module Blogitr
     def process text
       text
     end
+    def protect_html html
+      html
+    end
   end
   register_filter(:html, RawHtmlFilter.new)
 
@@ -43,6 +51,9 @@ module Blogitr
     def process text
       RedCloth.new(text).to_html
     end
+    def protect_html html
+      "<notextile>#{html}</notextile>"
+    end
   end
   register_filter(:textile, TextileFilter.new)
 
@@ -50,6 +61,11 @@ module Blogitr
   class MarkdownFilter < Filter
     def process text
       RDiscount.new(text, :smart).to_html
+    end
+    def protect_html html
+      # Wrapping raw HTML in another tag prevents Markdown from messing
+      # with it.  We can probably do better, but this is good for now.
+      "<div class=\"raw\">#{html}</div>"
     end
   end
   register_filter(:markdown, MarkdownFilter.new)

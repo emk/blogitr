@@ -1,8 +1,8 @@
 require 'spec_helper'
 
 describe Blogitr::Macro do
-  def expand text
-    Blogitr.expand_macros(text)
+  def expand text, filter = :html
+    Blogitr.expand_macros(Blogitr.find_filter(filter), text)
   end
 
   it "should expand macros with no arguments" do
@@ -37,5 +37,8 @@ describe Blogitr::Macro do
     expand(text).should == CGI.escapeHTML(text)
   end
 
-  # wrap HTML output in <notextile>, etc.
+  it "should protect expanded macros from filters" do
+    expand("<macro:example>foo</macro:example>", :textile).should ==
+      %Q(<notextile>Options: {}\nBody: foo</notextile>)
+  end
 end

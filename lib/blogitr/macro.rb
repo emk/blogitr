@@ -9,11 +9,13 @@ module Blogitr
     MACROS[name] = macro
   end
 
-  # Expand all macros in +text+.
-  def self.expand_macros text
+  # Expand all macros in +text+ (and do our best to protect their
+  # expansions against further munging by +filter+).
+  def self.expand_macros filter, text
     pattern = /<macro:([-_A-Za-z0-9]+) ((?:[^>'"]|"[^"]*"|'[^']*')*) >
                ((?:.|\n)*?)
                <\/macro:\1>/x
+   
     text.gsub(pattern) do |match|
       macro = MACROS[$1.to_sym]
       if macro
@@ -21,10 +23,11 @@ module Blogitr
         xml_doc = REXML::Document.new("<tag #{$2} />")
         xml_doc.root.attributes.each {|a, b| attributes[a] = b }
         body = $3
-        macro.expand(attributes, body)
+        html = macro.expand(attributes, body)
       else
-        CGI.escapeHTML(match)
+        html = CGI.escapeHTML(match)
       end
+      filter.protect_html(html)
     end
   end
 
