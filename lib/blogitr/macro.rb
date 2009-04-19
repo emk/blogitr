@@ -2,7 +2,7 @@ require 'rexml/document'
 require 'cgi'
 
 module Blogitr
-  MACROS = {}
+  MACROS = {} #:nodoc:
 
   # Register +macro+ under the symbol +name+.
   def self.register_macro name, macro

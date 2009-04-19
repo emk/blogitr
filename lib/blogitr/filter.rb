@@ -3,7 +3,7 @@ require 'redcloth'
 require 'rdiscount'
 
 module Blogitr
-  FILTERS = {}
+  FILTERS = {} #:nodoc:
 
   # This is error is raised for filter names which haven't been registered
   # using register_filter.
