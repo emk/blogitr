@@ -3,14 +3,22 @@
 Blogitr is an experimental blog storage engine based on git.  So far, this
 is just a rough sketch of an idea--nothing here is actually usable yet.
 
+Eventually, the goal is for Blogitr to supply git-based model classes for
+other blogging software.
+
 What Blogitr isn't intended to be:
 
 1. A static site generator.
 2. A dynamic site application.
 
-Instead, it corresponds to the model classes in a typical Rails blog
-application.  But instead of storing articles in a database, it will
-eventually store them in a git repository.
+What Blogitr currently supports:
+
+1. Document metadata (stored as YAML headers).
+2. Extended content (using the WordPress \<!--more--> convention).
+3. Pluggable text filters, with out-of-the box support for Textile,
+   Markdown and raw HTML.
+4. Pluggable macros for generating custom HTML.  These work like
+   \<typo:code>.
 
 This code is inspired by Jekyll and Typo.
 
