@@ -45,7 +45,7 @@ module Blogitr
       end
 
       # Split the body at a <!--more--> marker, if we have one.
-      if content =~ /\A((?:.|\n)*?)<!--more-->\s*\n((?:.|\n)*)\z/
+      if content =~ /\A((?:.|\n)*?)\n<!--more-->\s*\n((?:.|\n)*)\z/
         body = $1
         extended = $2
       else
@@ -76,6 +76,16 @@ module Blogitr
 
     def extended
       @extended ||= process_text(@raw_extended) if @raw_extended
+    end
+
+    # Convert a document to a string.  This is the inverse of
+    # Document#parse.
+    def to_s
+      headers = ""
+      headers = YAML::dump(@headers).sub(/^--- \n/, '') unless @headers.empty?
+      extended = ""
+      extended = "\n<!--more-->\n#{@raw_extended}" if @raw_extended
+      "#{headers}\n#{@raw_body}#{extended}"
     end
 
     protected

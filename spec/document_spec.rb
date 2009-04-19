@@ -11,6 +11,12 @@ describe Blogitr::Document do
     @doc.extended.should == extended
   end
 
+  it "should raise an error if an unknown fitler is specified" do
+    lambda do
+      parse "foo *bar* \"baz\"", :unknown
+    end.should raise_error(Blogitr::UnknownFilterError)
+  end
+
   it "should parse documents with a YAML header" do
     parse <<EOD
 title: My Doc
@@ -40,7 +46,7 @@ foo
 <!--more--> 
 bar
 EOD
-    should_parse_as({}, "foo\n", "bar\n")
+    should_parse_as({}, "foo", "bar\n")
   end
 
   it "should expand macros" do
@@ -52,14 +58,8 @@ EOD
 
   it "should provide access to raw body and extended content" do
     parse "*foo*\n<!--more-->\n_bar_", :textile
-    @doc.raw_body.should == "*foo*\n"
+    @doc.raw_body.should == "*foo*"
     @doc.raw_extended.should == "_bar_"
-  end
-
-  it "should raise an error if an unknown fitler is specified" do
-    lambda do
-      parse "foo *bar* \"baz\"", :unknown
-    end.should raise_error(Blogitr::UnknownFilterError)
   end
 
   describe "with a :textile filter" do
@@ -87,6 +87,26 @@ EOD
       parse text, :markdown
       should_parse_as({},
                       "<div class=\"raw\">Options: {}\nBody: *foo*</div>\n\n")
+    end
+  end
+
+  describe "#to_s" do
+    def should_serialize_as headers, body, extended, serialized
+      Blogitr::Document.new(headers, body, extended, :html).to_s.should ==
+        serialized
+    end
+
+    it "should serialize documents with headers" do
+      should_serialize_as({'title' => 'Foo'}, "_Bar_.", nil,
+                          "title: Foo\n\n_Bar_.")
+    end
+
+    it "should serialize documents without headers" do
+      should_serialize_as({}, "_Bar_.", nil, "\n_Bar_.")      
+    end
+
+    it "should serialize extended content using \\<!--more-->" do
+      should_serialize_as({}, "Bar.", "_Baz_.", "\nBar.\n<!--more-->\n_Baz_.")
     end
   end
 end
