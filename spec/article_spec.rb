@@ -17,4 +17,8 @@ describe Blogitr::Article do
   it "should have a date and time" do
     @article.date_time.should == DateTime.new(2009, 4, 19, 9, 47)
   end
+
+  it "should have an author" do
+    @article.author.should == 'J. Random Hacker'
+  end
 end

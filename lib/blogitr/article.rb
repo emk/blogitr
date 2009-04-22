@@ -27,9 +27,10 @@ module Blogitr
       super(:text => opts[:text], :filter => $7.to_sym)
     end
 
-    # The human-readable title of this article.
-    def title
-      headers['title']
-    end
+    # The title of this article.
+    def title() headers['title'] end
+
+    # The author of this article.
+    def author() headers['author'] end
   end
 end
