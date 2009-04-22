@@ -9,6 +9,10 @@ describe Blogitr::Blog do
     @blog.title.should == "My blog"
   end
 
+  it "should have a description" do
+    @blog.description.should == "An example blog built using blogitr"
+  end
+
   it "should return articles in reverse-chronological order" do
     articles = @blog.articles
     articles[0].title.should == "My newest post"

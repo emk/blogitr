@@ -16,9 +16,10 @@ module Blogitr
     end
 
     # The title of the blog.
-    def title
-      @metadata['title']
-    end
+    def title() @metadata['title'] end
+
+    # A one-line description of this blog.
+    def description() @metadata['description'] end
 
     # All the articles posted to the blog.
     #
